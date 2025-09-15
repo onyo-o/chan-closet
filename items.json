@@ -1,0 +1,28 @@
+{
+  "tops": [
+    "images/tops/top1.png",
+    "images/tops/top2.png",
+    "images/tops/top3.png",
+    "images/tops/top4.png"
+  ],
+  "bottoms": [
+    "images/bottoms/bottom1.png",
+    "images/bottoms/bottom2.png",
+    "images/bottoms/bottom3.png",
+    "images/bottoms/bottom4.png",
+    "images/bottoms/bottom5.png"
+  ],
+  "shoes": [
+    "images/shoes/shoe1.png",
+    "images/shoes/shoe2.png",
+    "images/shoes/shoe3.png"
+  ],
+  "accessories": [
+    "images/accessories/cap1.png",
+    "images/accessories/cap2.png",
+    "images/accessories/eyeglasses1.png",
+    "images/accessories/eyeglasses2.png",
+    "images/accessories/necklace1.png",
+    "images/accessories/ring1.png"
+  ]
+}

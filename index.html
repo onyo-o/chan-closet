@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Outfit Builder</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+  <style>
+    body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; display:flex; flex-direction:column; height:100vh; }
+    header { background:#111; color:#fff; padding:10px 14px; }
+    .toolbar { display:flex; gap:8px; align-items:center; padding:10px; flex-wrap:wrap; }
+    .carousel { display:flex; gap:8px; padding:10px; overflow-x:auto; border-top:1px solid #eee; border-bottom:1px solid #eee; }
+    .carousel img { height:64px; cursor:pointer; border:1px solid #ddd; background:#fff; padding:4px; border-radius:6px; }
+    #stage { flex:1; display:flex; justify-content:center; align-items:center; background:#f7f7f7; }
+    canvas { border:1px solid #bbb; }
+    button, select { padding:6px 10px; cursor:pointer; }
+    .spacer { flex:1; }
+  </style>
+</head>
+<body>
+  <header><strong>Outfit Builder</strong></header>
+
+  <div class="toolbar">
+    <button onclick="showCategory('tops')">Tops</button>
+    <button onclick="showCategory('bottoms')">Bottoms</button>
+    <button onclick="showCategory('shoes')">Shoes</button>
+    <button onclick="showCategory('accessories')">Accessories</button>
+
+    <div style="width:8px"></div>
+
+    <label>Background:
+      <select id="bgSelect" onchange="changeBackground(this.value)">
+        <option value="">none</option>
+        <option value="#ffffff">White</option>
+        <option value="#ffe6f0">Pink</option>
+        <option value="#e6f2ff">Light Blue</option>
+        <option value="images/bg/pattern1.jpg">Pattern (example)</option>
+      </select>
+    </label>
+
+    <div class="spacer"></div>
+
+    <button onclick="bringForward()">Bring ↑</button>
+    <button onclick="sendBack()">Send ↓</button>
+    <button onclick="duplicateSelected()">Duplicate</button>
+    <button onclick="deleteSelected()">Delete</button>
+
+    <button onclick="downloadOutfit()">Download PNG</button>
+  </div>
+
+  <div class="carousel" id="carousel" aria-label="items carousel"></div>
+
+  <div id="stage">
+    <canvas id="outfitCanvas" width="420" height="560"></canvas>
+  </div>
+
+  <script>
+    const canvas = new fabric.Canvas('outfitCanvas', { preserveObjectStacking: true });
+    canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
+    let items = { tops: [], bottoms: [], shoes: [], accessories: [] };
+
+    fetch('items.json')
+      .then(r => r.json())
+      .then(json => {
+        items = json;
+        showCategory('tops');
+      })
+      .catch(err => {
+        console.warn('Could not load items.json', err);
+      });
+
+    function showCategory(cat) {
+      const carousel = document.getElementById('carousel');
+      carousel.innerHTML = '';
+      const arr = items[cat] || [];
+      arr.forEach(src => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = src.split('/').pop();
+        img.onclick = () => addToCanvas(src);
+        carousel.appendChild(img);
+      });
+      if (arr.length === 0) {
+        carousel.innerHTML = '<em style="padding:10px;color:#666">No items in this category. Add images and update items.json.</em>';
+      }
+    }
+
+    function addToCanvas(src) {
+      fabric.Image.fromURL(src, function(img) {
+        const scale = Math.min(300 / img.width, 300 / img.height, 0.6);
+        img.set({
+          left: 60 + Math.random()*200,
+          top: 40 + Math.random()*200,
+          scaleX: scale,
+          scaleY: scale,
+          selectable: true,
+          cornerStyle: 'circle',
+          padding: 5
+        });
+        canvas.add(img).setActiveObject(img);
+        canvas.requestRenderAll();
+      }, { crossOrigin: 'anonymous' });
+    }
+
+    function deleteSelected() {
+      const obj = canvas.getActiveObject();
+      if (!obj) return;
+      canvas.remove(obj);
+      canvas.requestRenderAll();
+    }
+    function bringForward() {
+      const obj = canvas.getActiveObject();
+      if (!obj) return;
+      canvas.bringForward(obj);
+      canvas.requestRenderAll();
+    }
+    function sendBack() {
+      const obj = canvas.getActiveObject();
+      if (!obj) return;
+      canvas.sendBackwards(obj);
+      canvas.requestRenderAll();
+    }
+    function duplicateSelected() {
+      const obj = canvas.getActiveObject();
+      if (!obj) return;
+      obj.clone(cloned => {
+        cloned.set({ left: obj.left + 20, top: obj.top + 20 });
+        canvas.add(cloned).setActiveObject(cloned);
+        canvas.requestRenderAll();
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Delete' || e.key === 'Backspace') deleteSelected();
+    });
+
+    function changeBackground(val) {
+      if (!val) {
+        canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
+        canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
+        return;
+      }
+      if (val.startsWith('#')) {
+        canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
+        canvas.setBackgroundColor(val, canvas.renderAll.bind(canvas));
+      } else {
+        fabric.Image.fromURL(val, function(img) {
+          canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+            originX: 'left', originY: 'top', scaleX: canvas.width / img.width, scaleY: canvas.height / img.height
+          });
+        }, { crossOrigin: 'anonymous' });
+      }
+    }
+
+    function downloadOutfit() {
+      const dataURL = canvas.toDataURL({ format: 'png', multiplier: 2 });
+      const link = document.createElement('a');
+      link.href = dataURL;
+      link.download = 'outfit.png';
+      link.click();
+    }
+  </script>
+</body>
+</html>
