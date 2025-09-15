@@ -34,7 +34,7 @@
         <option value="#ffffff">White</option>
         <option value="#ffe6f0">Pink</option>
         <option value="#e6f2ff">Light Blue</option>
-        <option value="images/bg/pattern1.jpg">Pattern (example)</option>
+        <option value="images/bg/pattern1.jpg">Pattern</option>
       </select>
     </label>
 
@@ -59,7 +59,7 @@
     canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
     let items = { tops: [], bottoms: [], shoes: [], accessories: [] };
 
-    fetch('items.json')
+    fetch('./items.json')
       .then(r => r.json())
       .then(json => {
         items = json;
