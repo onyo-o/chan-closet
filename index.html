@@ -100,7 +100,13 @@
           lockRotation: true,
           hasRotatingPoint: false
         });
-        img.setControlsVisibility({ mtr: false });
+        img.setControlsVisibility({
+          mtr: false,
+          ml: false,
+          mr: false,
+          mt: false,
+          mb: false
+        });
         img.lockScalingFlip = true;
         canvas.add(img).setActiveObject(img);
         canvas.requestRenderAll();
