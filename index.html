@@ -246,10 +246,10 @@
       link.click();
     }
     const actionsDiv = document.getElementById('itemActions');
+    const delBtn = document.getElementById('delBtn');
     const lockBtn = document.getElementById('lockBtn');
     const flipBtn = document.getElementById('flipBtn');
     const dupBtn = document.getElementById('dupBtn');
-    const delBtn = document.getElementById('delBtn');
 
     function updateActionPosition(obj) {
       if (!obj) return;
@@ -262,14 +262,34 @@
       actionsDiv.style.top = `${top}px`;
     }
 
+    function updateActionButtons(obj) {
+      if (!obj) return;
+
+      const locked = obj.lockMovementX;
+
+      if (locked) {
+        lockBtn.style.display = 'inline-block';
+        delBtn.style.display = 'inline-block';
+        flipBtn.style.display = 'none';
+        dupBtn.style.display = 'none';
+      } else {
+        lockBtn.style.display = 'inline-block';
+        delBtn.style.display = 'inline-block';
+        flipBtn.style.display = 'inline-block';
+        dupBtn.style.display = 'inline-block';
+      }
+    }
+
     canvas.on('selection:created', e => {
       const obj = e.selected[0];
       updateActionPosition(obj);
+      updateActionButtons(obj);
       actionsDiv.style.display = 'flex';
     });
     canvas.on('selection:updated', e => {
       const obj = e.selected[0];
       updateActionPosition(obj);
+      updateActionButtons(obj);
       actionsDiv.style.display = 'flex';
     });
     canvas.on('selection:cleared', () => {
