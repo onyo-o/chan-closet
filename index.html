@@ -119,10 +119,6 @@
 
     <div class="spacer"></div>
 
-    <button onclick="bringForward()">Bring ↑</button>
-    <button onclick="sendBack()">Send ↓</button>
-    <button onclick="duplicateSelected()">Duplicate</button>
-    <button onclick="deleteSelected()">Delete</button>
     <button onclick="clearCanvas()">Clear Canvas</button>
     <button onclick="downloadOutfit()">Download PNG</button>
   </div>
@@ -185,35 +181,11 @@
       }, { crossOrigin: 'anonymous' });
     }
 
-    function deleteSelected() {
-      const obj = canvas.getActiveObject();
-      if (!obj) return;
-      canvas.remove(obj);
-      canvas.requestRenderAll();
-    }
-    function bringForward() {
-      const obj = canvas.getActiveObject();
-      if (!obj) return;
-      canvas.bringForward(obj);
-      canvas.requestRenderAll();
-    }
-    function sendBack() {
-      const obj = canvas.getActiveObject();
-      if (!obj) return;
-      canvas.sendBackwards(obj);
-      canvas.requestRenderAll();
-    }
-    function duplicateSelected() {
-      const obj = canvas.getActiveObject();
-      if (!obj) return;
-      obj.clone(cloned => {
-        cloned.set({ left: obj.left + 20, top: obj.top + 20 });
-        canvas.add(cloned).setActiveObject(cloned);
-        canvas.requestRenderAll();
-      });
-    }
+
     function clearCanvas() {
-      canvas.clear();
+      if (confirm('Are you sure you want to clear the canvas?')) {
+        canvas.clear();
+      }
     }
 
     document.addEventListener('keydown', (e) => {
