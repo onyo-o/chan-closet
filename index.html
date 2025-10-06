@@ -282,9 +282,17 @@
     lockBtn.onclick = () => {
       const obj = canvas.getActiveObject();
       if (!obj) return;
-      obj.selectable = !obj.selectable;
-      obj.lockMovementX = obj.lockMovementY = obj.lockScalingX = obj.lockScalingY = obj.lockRotation = obj.selectable;
-      lockBtn.textContent = obj.selectable ? '🔒' : '🔓';
+      const locked = obj.lockMovementX;
+      obj.set({
+        lockMovementX: !locked,
+        lockMovementY: !locked,
+        lockScalingX: !locked,
+        lockScalingY: !locked,
+        lockRotation: !locked
+      });
+      obj.selectable = true;
+      lockBtn.textContent = locked ? '🔒' : '🔓';
+      canvas.setActiveObject(obj);
       canvas.requestRenderAll();
     };
 
