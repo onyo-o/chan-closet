@@ -1,22 +1,101 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <title>Outfit Builder</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
   <style>
-    body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; display:flex; flex-direction:column; height:100vh; }
-    header { background:#111; color:#fff; padding:10px 14px; }
-    .toolbar { display:flex; gap:8px; align-items:center; padding:10px; flex-wrap:wrap; }
-    .carousel { display:flex; gap:8px; padding:10px; overflow-x:auto; border-top:1px solid #eee; border-bottom:1px solid #eee; }
-    .carousel img { height:64px; cursor:pointer; border:1px solid #ddd; background:#fff; padding:4px; border-radius:6px; }
-    #stage { flex:1; display:flex; justify-content:center; align-items:center; background:#f7f7f7; }
-    canvas { border:1px solid #bbb; }
-    button, select { padding:6px 10px; cursor:pointer; }
-    .spacer { flex:1; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background: #111;
+      color: #fff;
+      padding: 10px 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 10px;
+      flex-wrap: wrap;
+    }
+
+    .carousel {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      overflow-x: auto;
+      border-top: 1px solid #eee;
+      border-bottom: 1px solid #eee;
+    }
+
+    .carousel img {
+      height: 64px;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      background: #fff;
+      padding: 4px;
+      border-radius: 6px;
+    }
+
+    #stage {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f7f7f7;
+    }
+
+    canvas {
+      border: 1px solid #bbb;
+    }
+
+    button,
+    select {
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .item-actions {
+      position: absolute;
+      display: none;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      z-index: 10;
+    }
+
+    .item-actions button {
+      border: none;
+      background: #fff;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .item-actions button:hover {
+      background: #eee;
+    }
   </style>
 </head>
+
 <body>
   <header><strong>Outfit Builder</strong></header>
 
@@ -52,6 +131,12 @@
 
   <div id="stage">
     <canvas id="outfitCanvas" width="420" height="560"></canvas>
+    <div id="itemActions" class="item-actions">
+      <button id="lockBtn">🔒</button>
+      <button id="flipBtn">↔️</button>
+      <button id="dupBtn">⧉</button>
+      <button id="delBtn">🗑️</button>
+    </div>
   </div>
 
   <script>
@@ -86,11 +171,11 @@
     }
 
     function addToCanvas(src) {
-      fabric.Image.fromURL(src, function(img) {
+      fabric.Image.fromURL(src, function (img) {
         const scale = Math.min(300 / img.width, 300 / img.height, 0.6);
         img.set({
-          left: 60 + Math.random()*200,
-          top: 40 + Math.random()*200,
+          left: 60 + Math.random() * 200,
+          top: 40 + Math.random() * 200,
           scaleX: scale,
           scaleY: scale,
           selectable: true,
@@ -155,7 +240,7 @@
         canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
         canvas.setBackgroundColor(val, canvas.renderAll.bind(canvas));
       } else {
-        fabric.Image.fromURL(val, function(img) {
+        fabric.Image.fromURL(val, function (img) {
           canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
             originX: 'left', originY: 'top', scaleX: canvas.width / img.width, scaleY: canvas.height / img.height
           });
@@ -170,6 +255,61 @@
       link.download = 'outfit.png';
       link.click();
     }
+    const actionsDiv = document.getElementById('itemActions');
+    const lockBtn = document.getElementById('lockBtn');
+    const flipBtn = document.getElementById('flipBtn');
+    const dupBtn = document.getElementById('dupBtn');
+    const delBtn = document.getElementById('delBtn');
+
+    function updateActionPosition(obj) {
+      if (!obj) return;
+      const rect = canvas.getElement().getBoundingClientRect();
+      const center = obj.getCenterPoint();
+      const p = canvas.viewportTransform;
+      const left = rect.left + center.x * p[0] + p[4];
+      const top = rect.top + center.y * p[3] + p[5] - (obj.height * obj.scaleY / 2) - 40;
+      actionsDiv.style.left = `${left - 50}px`;
+      actionsDiv.style.top = `${top}px`;
+    }
+
+    canvas.on('selection:created', e => {
+      const obj = e.selected[0];
+      updateActionPosition(obj);
+      actionsDiv.style.display = 'flex';
+    });
+    canvas.on('selection:updated', e => {
+      const obj = e.selected[0];
+      updateActionPosition(obj);
+      actionsDiv.style.display = 'flex';
+    });
+    canvas.on('selection:cleared', () => {
+      actionsDiv.style.display = 'none';
+    });
+    canvas.on('object:moving', e => updateActionPosition(e.target));
+    canvas.on('object:scaling', e => updateActionPosition(e.target));
+    canvas.on('object:rotating', e => updateActionPosition(e.target));
+
+    lockBtn.onclick = () => {
+      const obj = canvas.getActiveObject();
+      if (!obj) return;
+      obj.selectable = !obj.selectable;
+      obj.lockMovementX = obj.lockMovementY = obj.lockScalingX = obj.lockScalingY = obj.lockRotation = obj.selectable;
+      lockBtn.textContent = obj.selectable ? '🔒' : '🔓';
+      canvas.requestRenderAll();
+    };
+
+    flipBtn.onclick = () => {
+      const obj = canvas.getActiveObject();
+      if (!obj) return;
+      obj.toggle('flipX');
+      canvas.requestRenderAll();
+      updateActionPosition(obj);
+    };
+
+    dupBtn.onclick = duplicateSelected;
+    delBtn.onclick = deleteSelected;
+
   </script>
 </body>
+
 </html>
