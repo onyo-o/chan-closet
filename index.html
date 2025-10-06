@@ -144,16 +144,6 @@
     canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
     let items = { tops: [], bottoms: [], shoes: [], accessories: [] };
 
-    fetch('./items.json')
-      .then(r => r.json())
-      .then(json => {
-        items = json;
-        showCategory('tops');
-      })
-      .catch(err => {
-        console.warn('Could not load items.json', err);
-      });
-
     function showCategory(cat) {
       const carousel = document.getElementById('carousel');
       carousel.innerHTML = '';
@@ -309,6 +299,15 @@
     dupBtn.onclick = duplicateSelected;
     delBtn.onclick = deleteSelected;
 
+    fetch('./items.json')
+      .then(r => r.json())
+      .then(json => {
+        items = json;
+        showCategory('tops');
+      })
+      .catch(err => {
+        console.warn('Could not load items.json', err);
+      });
   </script>
 </body>
 
