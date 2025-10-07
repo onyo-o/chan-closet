@@ -152,7 +152,7 @@
         carousel.appendChild(img);
       });
       if (arr.length === 0) {
-        carousel.innerHTML = '<em style="padding:10px;color:#666">No items in this category. Add images and update items.json.</em>';
+        carousel.innerHTML = '<em style="padding:10px;color:#666">No items in this category.</em>';
       }
     }
 
@@ -179,6 +179,23 @@
         canvas.add(img).setActiveObject(img);
         canvas.requestRenderAll();
       }, { crossOrigin: 'anonymous' });
+    }
+
+    function deleteSelected() {
+      const obj = canvas.getActiveObject();
+      if (!obj) return;
+      canvas.remove(obj);
+      canvas.requestRenderAll();
+    }
+
+    function duplicateSelected() {
+      const obj = canvas.getActiveObject();
+      if (!obj) return;
+      obj.clone(cloned => {
+        cloned.set({ left: obj.left + 20, top: obj.top + 20 });
+        canvas.add(cloned).setActiveObject(cloned);
+        canvas.requestRenderAll();
+      });
     }
 
 
