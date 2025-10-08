@@ -29,6 +29,12 @@
       flex-wrap: wrap;
     }
 
+    .toolbar button.active {
+      background: #222;
+      color: #fff;
+      border-radius: 6px;
+    }
+
     .carousel {
       display: flex;
       gap: 8px;
@@ -104,6 +110,8 @@
     <button onclick="showCategory('bottoms')">Bottoms</button>
     <button onclick="showCategory('shoes')">Shoes</button>
     <button onclick="showCategory('accessories')">Accessories</button>
+    <button onclick="showCategory('stickers')">Stickers</button>
+    <button onclick="showCategory('background')">Background</button>
 
     <div style="width:8px"></div>
 
@@ -138,9 +146,11 @@
   <script>
     const canvas = new fabric.Canvas('outfitCanvas', { preserveObjectStacking: true });
     canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
-    let items = { tops: [], bottoms: [], shoes: [], accessories: [] };
+    let items = { tops: [], bottoms: [], shoes: [], accessories: [], stickers: [], background: [] };
 
     function showCategory(cat) {
+      document.querySelectorAll('.toolbar button').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
       const carousel = document.getElementById('carousel');
       carousel.innerHTML = '';
       const arr = items[cat] || [];
@@ -157,6 +167,21 @@
     }
 
     function addToCanvas(src) {
+      const activeBtn = document.querySelector('.toolbar button.active');
+      const activeCat = activeBtn ? activeBtn.textContent.toLowerCase() : '';
+
+      if (activeCat === 'background') {
+        fabric.Image.fromURL(src, function (img) {
+          canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+            originX: 'left',
+            originY: 'top',
+            scaleX: canvas.width / img.width,
+            scaleY: canvas.height / img.height,
+          });
+        }, { crossOrigin: 'anonymous' });
+        return;
+      }
+
       fabric.Image.fromURL(src, function (img) {
         const scale = Math.min(300 / img.width, 300 / img.height, 0.6);
         img.set({
@@ -231,7 +256,7 @@
       const dataURL = canvas.toDataURL({ format: 'png', multiplier: 2 });
       const link = document.createElement('a');
       link.href = dataURL;
-      link.download = 'outfit.png';
+      link.download = 'chan-outfit.png';
       link.click();
     }
     const actionsDiv = document.getElementById('itemActions');

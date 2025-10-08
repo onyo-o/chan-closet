@@ -24,5 +24,15 @@
     "images/accessories/eyeglasses2.png",
     "images/accessories/necklace1.png",
     "images/accessories/ring1.png"
+  ],
+  "stickers": [
+    "images/stickers/sticker-1.png",
+    "images/stickers/sticker-2.png",
+    "images/stickers/sticker-3.png"
+  ],
+  "background": [
+    "images/background/bg1.png",
+    "images/background/bg2.png",
+    "images/background/bg3.png"
   ]
 }
