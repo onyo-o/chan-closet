@@ -195,6 +195,8 @@
       fabric.Image.fromURL(src, function (img) {
         const scale = Math.min(300 / img.width, 300 / img.height, 0.6);
         img.set({
+          originX: 'center',
+          originY: 'center',
           left: canvas.width / 2 + (Math.random() - 0.5) * 100,
           top: canvas.height / 2 + (Math.random() - 0.5) * 100,
           scaleX: scale,
@@ -227,7 +229,22 @@
       const obj = canvas.getActiveObject();
       if (!obj) return;
       obj.clone(cloned => {
-        cloned.set({ left: obj.left + 20, top: obj.top + 20 });
+        cloned.set({
+          left: obj.left + 20,
+          top: obj.top + 20,
+          cornerStyle: 'cirlcle',
+          padding: 5,
+          lockUniScaling: true,
+          lockScalingFlip: true
+        });
+
+        cloned.setControlsVisibility({
+          ml: false,
+          mr: false,
+          mt: false,
+          mb: false
+        });
+        
         canvas.add(cloned).setActiveObject(cloned);
         canvas.requestRenderAll();
       });
