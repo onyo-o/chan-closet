@@ -176,15 +176,15 @@ function updateActionButtons(obj) {
 //Canvas event handlers
 canvas.on('selection:created', e => {
     const obj = e.selected[0];
-    updateActionPosition(obj);
-    updateActionButtons(obj);
     actionsDiv.style.display = 'flex';
+    updateActionButtons(obj);
+    requestAnimationFrame(() => updateActionPosition(obj));
 });
 canvas.on('selection:updated', e => {
     const obj = e.selected[0];
-    updateActionPosition(obj);
-    updateActionButtons(obj);
     actionsDiv.style.display = 'flex';
+    updateActionButtons(obj);
+    requestAnimationFrame(() => updateActionPosition(obj));
 });
 canvas.on('selection:cleared', () => {
     actionsDiv.style.display = 'none';
