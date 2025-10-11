@@ -167,7 +167,7 @@ function updateActionPosition(obj) {
     const p = canvas.viewportTransform;
     const left = rect.left + center.x * p[0] + p[4];
     const top = rect.top + center.y * p[3] + p[5] - (obj.height * obj.scaleY / 2) + 8;
-    actionsDiv.style.left = `${left + 45}px`;
+    actionsDiv.style.left = `${left - 75}px`;
     actionsDiv.style.top = `${top}px`;
 }
 
