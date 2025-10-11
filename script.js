@@ -50,7 +50,23 @@ function addToCanvas(src) {
     const activeCat = activeBtn ? activeBtn.textContent.toLowerCase() : '';
 
     if (activeCat === 'background') {
-        setCanvasBackground(src);
+        fabric.Image.fromURL(src, function (img) {
+            const canvasRatio = canvas.width / canvas.height;
+            const imgRatio = img.width / img.height;
+            let scale;
+
+            if (imgRatio > canvasRatio) {
+                scale = canvas.height / img.height;
+            } else {
+                scale = canvas.width / img.width;
+            }
+            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+                originX: 'left',
+                originY: 'top',
+                scaleX: scale,
+                scaleY: scale,
+            });
+        }, { crossOrigin: 'anonymous' });
         return;
     }
 
@@ -151,7 +167,7 @@ function updateActionPosition(obj) {
     const p = canvas.viewportTransform;
     const left = rect.left + center.x * p[0] + p[4];
     const top = rect.top + center.y * p[3] + p[5] - (obj.height * obj.scaleY / 2) + 8;
-    actionsDiv.style.left = `${left}px`;
+    actionsDiv.style.left = `${left + 45}px`;
     actionsDiv.style.top = `${top}px`;
 }
 
