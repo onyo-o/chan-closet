@@ -84,6 +84,7 @@ function addToCanvas(src) {
             padding: 5,
             lockUniScaling: true
         });
+        img.name = `Image ${canvas.getObjects().length}`;
         img.setControlsVisibility({
             ml: false,
             mr: false,
@@ -245,3 +246,94 @@ fetch('./items.json')
     .then(r => r.json())
     .then(json => { items = json; })
     .catch(err => console.warn('Could not load items.json', err));
+
+//Layer Panel Setup
+const layerList = document.getElementById('layerList');
+
+function updateLayerPanel() {
+    layerList.innerHTML = '';
+
+    // Get all non-background objects
+    const objects = canvas.getObjects().filter(o => o !== canvas.backgroundImage);
+
+    // Show topmost layer first
+    objects.slice().reverse().forEach((obj, index) => {
+        const li = document.createElement('li');
+        li.dataset.index = objects.length - 1 - index;
+        li.draggable = true;
+
+        // Thumbnail
+        const thumb = document.createElement('img');
+        thumb.className = 'layer-thumb';
+
+        const tempCanvas = new fabric.StaticCanvas(null, { width: 40, height: 40 });
+        tempCanvas.add(obj.clone());
+        thumb.src = tempCanvas.toDataURL({ format: 'png' });
+
+        // Label
+        const label = document.createElement('span');
+        label.textContent = obj.name || `Image ${objects.length - index}`;
+
+        li.appendChild(thumb);
+        li.appendChild(label);
+
+        if (obj === canvas.getActiveObject()) li.classList.add('active');
+        layerList.appendChild(li);
+    });
+}
+
+// Auto-refresh layer list
+canvas.on('selection:created', updateLayerPanel);
+canvas.on('selection:updated', updateLayerPanel);
+canvas.on('selection:cleared', updateLayerPanel);
+canvas.on('object:added', updateLayerPanel);
+canvas.on('object:removed', updateLayerPanel);
+canvas.on('object:modified', updateLayerPanel);
+
+// Click layer to select object
+layerList.addEventListener('click', e => {
+    const li = e.target.closest('li');
+    if (!li) return;
+    const index = parseInt(li.dataset.index);
+    const obj = canvas.getObjects()[index];
+    if (obj && obj !== canvas.backgroundImage) {
+        canvas.setActiveObject(obj);
+        canvas.requestRenderAll();
+        updateLayerPanel();
+    }
+});
+
+// Drag-and-drop reordering
+let dragSrc = null;
+
+layerList.addEventListener('dragstart', e => {
+    dragSrc = e.target.closest('li');
+    e.dataTransfer.effectAllowed = 'move';
+});
+
+layerList.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+});
+
+layerList.addEventListener('drop', e => {
+    e.preventDefault();
+    const target = e.target.closest('li');
+    if (!target || target === dragSrc) return;
+
+    const srcIndex = parseInt(dragSrc.dataset.index);
+    const targetIndex = parseInt(target.dataset.index);
+
+    const objs = canvas.getObjects().filter(o => o !== canvas.backgroundImage);
+    const movedObj = objs[srcIndex];
+
+    objs.splice(srcIndex, 1);
+    objs.splice(targetIndex, 0, movedObj);
+
+    // Rebuild canvas with new order
+    canvas.getObjects().forEach(o => { if (o !== canvas.backgroundImage) canvas.remove(o); });
+    objs.forEach(o => canvas.add(o));
+
+    canvas.requestRenderAll();
+    updateLayerPanel();
+});

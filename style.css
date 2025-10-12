@@ -56,6 +56,63 @@ canvas {
     border: 1px solid #bbb;
 }
 
+.layer-panel {
+    position: absolute;
+    right: 10px;
+    top: 60px;
+    width: 160px;
+    height: 70%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+    padding: 10px;
+    font-family: sans-serif;
+}
+
+.layer-panel h3 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 16px;
+}
+
+#layerList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#layerList li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    margin-bottom: 5px;
+    background: #f3f3f3;
+    border-radius: 8px;
+    cursor: grab;
+    transition: background 0.2s ease;
+    user-select: none;
+}
+
+#layerList li:hover {
+    background: #eaeaea;
+}
+
+#layerList li.active {
+    background: #d0ebff;
+    font-weight: bold;
+}
+
+.layer-thumb {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: #ccc;
+    flex-shrink: 0;
+}
+
 button,
 select {
     padding: 6px 10px;
