@@ -105,12 +105,12 @@ canvas {
 }
 
 .layer-thumb {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border: 1px solid #ccc;
     border-radius: 6px;
-    object-fit: cover;
-    background: #ccc;
-    flex-shrink: 0;
+    background: #f8f8f8;
 }
 
 button,

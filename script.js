@@ -263,21 +263,14 @@ function updateLayerPanel() {
         li.draggable = true;
 
         // Thumbnail
-        const thumb = document.createElement('img');
-        thumb.className = 'layer-thumb';
+        if (obj.type === "image" && obj._element) {
+            const thumb = document.createElement("img");
+            thumb.className = "layer-thumb";
+            thumb.src = obj._element.src;
+            li.appendChild(thumb);
+        }
 
-        const tempCanvas = new fabric.StaticCanvas(null, { width: 40, height: 40 });
-        tempCanvas.add(obj.clone());
-        thumb.src = tempCanvas.toDataURL({ format: 'png' });
-
-        // Label
-        const label = document.createElement('span');
-        label.textContent = obj.name || `Image ${objects.length - index}`;
-
-        li.appendChild(thumb);
-        li.appendChild(label);
-
-        if (obj === canvas.getActiveObject()) li.classList.add('active');
+        if (obj === canvas.getActiveObject()) li.classList.add("active");
         layerList.appendChild(li);
     });
 }
