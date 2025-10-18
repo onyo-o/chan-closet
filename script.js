@@ -153,6 +153,62 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Delete' || e.key === 'Backspace') deleteSelected();
 });
 
+//Action Btn Panel
+const actionsDiv = document.getElementById('itemActions');
+const delBtn = document.getElementById('delBtn');
+const lockBtn = document.getElementById('lockBtn');
+const flipBtn = document.getElementById('flipBtn');
+const dupBtn = document.getElementById('dupBtn');
+
+
+function updateActionPosition(obj) {
+    if (!obj) return;
+    const rect = canvas.getElement().getBoundingClientRect();
+    const center = obj.getCenterPoint();
+    const p = canvas.viewportTransform;
+    const left = rect.left + center.x * p[0] + p[4];
+    const top = rect.top + center.y * p[3] + p[5] - (obj.height * obj.scaleY / 2) + 8;
+    actionsDiv.style.left = `${left - 75}px`;
+    actionsDiv.style.top = `${top}px`;
+}
+
+function updateActionButtons(obj) {
+    if (!obj) return;
+
+    const locked = obj.lockMovementX;
+
+    if (locked) {
+        lockBtn.style.display = 'inline-block';
+        delBtn.style.display = 'inline-block';
+        flipBtn.style.display = 'none';
+        dupBtn.style.display = 'none';
+    } else {
+        lockBtn.style.display = 'inline-block';
+        delBtn.style.display = 'inline-block';
+        flipBtn.style.display = 'inline-block';
+        dupBtn.style.display = 'inline-block';
+    }
+}
+
+//Canvas event handlers
+canvas.on('selection:created', e => {
+    const obj = e.selected[0];
+    actionsDiv.style.display = 'flex';
+    updateActionButtons(obj);
+    requestAnimationFrame(() => updateActionPosition(obj));
+});
+canvas.on('selection:updated', e => {
+    const obj = e.selected[0];
+    actionsDiv.style.display = 'flex';
+    updateActionButtons(obj);
+    requestAnimationFrame(() => updateActionPosition(obj));
+});
+canvas.on('selection:cleared', () => {
+    actionsDiv.style.display = 'none';
+});
+canvas.on('object:moving', e => updateActionPosition(e.target));
+canvas.on('object:scaling', e => updateActionPosition(e.target));
+canvas.on('object:rotating', e => updateActionPosition(e.target));
 
 //Action btn logic
 lockBtn.onclick = () => {
@@ -204,7 +260,6 @@ function updateLayerPanel() {
     objects.slice().reverse().forEach((obj, index) => {
         const li = document.createElement('li');
         li.dataset.index = objects.length - 1 - index;
-        li.classList.add("layer-item");
         li.draggable = true;
 
         // Thumbnail
@@ -214,74 +269,6 @@ function updateLayerPanel() {
             thumb.src = obj._element.src;
             li.appendChild(thumb);
         }
-
-        // --- Button panel ---
-        const btnGroup = document.createElement("div");
-        btnGroup.className = "layer-btns";
-
-        // Duplicate
-        const dup = document.createElement("button");
-        dup.textContent = "⧉";
-        dup.title = "Duplicate";
-        dup.onclick = () => {
-            obj.clone(cloned => {
-                cloned.set({
-                    left: obj.left + 20,
-                    top: obj.top + 20,
-                    cornerStyle: "circle",
-                    padding: 5,
-                    lockUniScaling: true,
-                    lockScalingFlip: true,
-                });
-                cloned.setControlsVisibility({
-                    ml: false, mr: false, mt: false, mb: false,
-                });
-                canvas.add(cloned);
-                canvas.setActiveObject(cloned);
-                canvas.requestRenderAll();
-                updateLayerPanel();
-            });
-        };
-
-        //Flip
-        const flip = document.createElement("button");
-        flip.textContent = "🔄";
-        flip.title = "Flip";
-        flip.onclick = () => {
-            obj.toggle("flipX");
-            canvas.requestRenderAll();
-        };
-
-        //Lock toggle
-        const lock = document.createElement("button");
-        lock.textContent = obj.lockMovementX ? "🔓" : "🔒";
-        lock.title = "Lock / Unlock";
-        lock.onclick = () => {
-            const locked = obj.lockMovementX;
-            obj.set({
-                lockMovementX: !locked,
-                lockMovementY: !locked,
-                lockScalingX: !locked,
-                lockScalingY: !locked,
-                lockRotation: !locked,
-            });
-            lock.textContent = locked ? "🔒" : "🔓";
-            canvas.requestRenderAll();
-        };
-
-        //Delete
-        const del = document.createElement("button");
-        del.textContent = "🗑️";
-        del.title = "Delete";
-        del.onclick = () => {
-            canvas.remove(obj);
-            canvas.requestRenderAll();
-            updateLayerPanel();
-        };
-
-        // Add all buttons
-        btnGroup.append(dup, flip, lock, del);
-        li.appendChild(btnGroup);
 
         //Highlight if active
         if (obj === canvas.getActiveObject()) li.classList.add("active");
