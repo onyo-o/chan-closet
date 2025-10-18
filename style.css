@@ -123,27 +123,37 @@ select {
     flex: 1;
 }
 
-.item-actions {
-    position: absolute;
-    display: none;
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 4px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    z-index: 10;
+.layer-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px;
+  margin-bottom: 6px;
 }
 
-.item-actions button {
-    border: none;
-    background: #fff;
-    cursor: pointer;
-    padding: 4px 6px;
-    border-radius: 6px;
-    font-size: 12px;
+.layer-item.active {
+  border-color: #0078ff;
+  background: #eef6ff;
 }
 
-.item-actions button:hover {
-    background: #eee;
+.layer-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.layer-btns button {
+  border: none;
+  background: #f4f4f4;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 3px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.layer-btns button:hover {
+  background: #e0e0e0;
 }
