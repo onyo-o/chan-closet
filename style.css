@@ -11,6 +11,7 @@ header {
     color: #fffadc;
     padding: 36px 77px;
     font-family: 'Notable', sans-serif;
+    font-size: large;
 }
 
 .toolbar {
@@ -59,8 +60,8 @@ canvas {
 
 .layer-panel {
     position: absolute;
-    left: 1190px;
-    top: 242px;
+    left: 1320px;
+    top: 230px;
     width: 160px;
     height: 70%;
     background: rgba(255, 255, 255, 0.9);
