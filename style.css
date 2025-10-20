@@ -3,13 +3,13 @@ body {
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 200vh;
 }
 
 header {
     background: #05044b;
     color: #fffadc;
-    padding: 36px 80px;
+    padding: 36px 77px;
     font-family: 'Notable', sans-serif;
 }
 
@@ -22,8 +22,8 @@ header {
 }
 
 .toolbar button.active {
-    background: #222;
-    color: #fff;
+    background: #05044b;
+    color: #fffadc;
     border-radius: 6px;
 }
 
@@ -59,8 +59,8 @@ canvas {
 
 .layer-panel {
     position: absolute;
-    right: 10px;
-    top: 60px;
+    left: 1190px;
+    top: 242px;
     width: 160px;
     height: 70%;
     background: rgba(255, 255, 255, 0.9);
